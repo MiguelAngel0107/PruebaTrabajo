@@ -9,6 +9,9 @@ from apps.bacterias.entity.bateria import Bacteria
 # Serializers
 from .serializers import ConfigVariableSerializer
 
+import timeit
+import matplotlib.pyplot as plt
+
 
 class CalculateNumberEndBaterias(APIView):
 
@@ -16,15 +19,23 @@ class CalculateNumberEndBaterias(APIView):
         try:
             bacterias = Bacteria('default', [2, 3, 3, 1, 2])
 
-            for i in range(10):
-                print("Serie", i, "---------------------------------------------")
-                bacterias.add_bacterias()
-                print("---------------------------------------------")
+            # def run_control_interactor():
+            #    for i in range(15):
+            #        print("Serie", i, "---------------------------------------------")
+            #        bacterias.search_and_change()
+
+            def run_control_interactor():
+                bacterias.control_interactor()
+
+            # Ejecutar el método control_interactor() y medir el tiempo
+            execution_time = timeit.timeit(run_control_interactor, number=1)
+
+            # Imprimir el tiempo de ejecución
+            print("Tiempo de ejecución:", execution_time)
 
         except Exception as e:
             # Capturar cualquier excepción y devolver un mensaje de error en la respuesta
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
         return Response({}, status=status.HTTP_200_OK)
 
 
