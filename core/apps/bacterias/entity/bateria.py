@@ -1,4 +1,4 @@
-from ..models import ConfigVariable
+from ..models import ConfigVariable, Lote
 import numpy as np
 
 
@@ -25,6 +25,40 @@ class Bacteria():
 
         self.array_init = array_init
 
+    def split_and_evaluate(self, iter):
+        array_init = np.array(self.array_init)
+
+        # Obtener el tamaño actual del arreglo
+        array_size = len(array_init)
+
+        if array_size <= 15:
+            next(self.search_and_change_generator())
+        else:
+            sub_arrays = np.array_split(array_init, array_size // 3)
+            self.storage_lotes(sub_arrays, iter)
+            self.array_init = sub_arrays[0]
+            next(self.search_and_change_generator())
+
+    def storage_lotes(self, sub_arrays, iter):
+        for index, sub_array in enumerate(sub_arrays):
+            # print(sub_array)
+            # print(type(sub_array))
+            Lote.objects.create(
+                id_lote="ABC123",
+                id_collection=str(index),
+                nivel_iter=iter,
+                array=sub_array.tolist(),
+                status=False,
+                size=len(sub_array)
+            )
+        raw_list = Lote.objects.filter(
+            nivel_iter=iter, id_collection=0).first()
+        raw_list.status = True
+        raw_list.save()
+
+    def iterar_in_db(self):
+        pass
+
     def search_and_change(self):
         # Convertir la lista a un arreglo de numpy
         array_init = np.array(self.array_init)
@@ -43,7 +77,8 @@ class Bacteria():
             repeated_arr = np.tile(age_start_arr, zero_elements.size)
 
             # Insertar el arreglo repetido en los índices encontrados
-            zero_elements = np.insert(zero_elements, np.repeat(np.arange(zero_elements.size), 2) + 1, repeated_arr)
+            zero_elements = np.insert(zero_elements, np.repeat(
+                np.arange(zero_elements.size), 2) + 1, repeated_arr)
 
             # Reemplazar los elementos iguales a 0 por self.days_reproduction
             zero_elements[zero_elements == 0] = self.days_reproduction
@@ -62,11 +97,14 @@ class Bacteria():
         # Convertir el arreglo de numpy de vuelta a lista
         self.array_init = array_init.tolist()
 
-        #print(self.array_init)
+        # print(self.array_init)
 
     def search_and_change_generator(self):
+        # print("==========================================================")
+        # print(type(self.array_init))
         # Convertir la lista a un arreglo de numpy
         array_init = np.array(self.array_init)
+        print("SizeStart: ", len(array_init))
 
         # Obtener los elementos cero del arreglo principal
         zero_elements = array_init[array_init == 0]
@@ -82,7 +120,8 @@ class Bacteria():
             repeated_arr = np.tile(age_start_arr, zero_elements.size)
 
             # Insertar el arreglo repetido en los índices encontrados
-            zero_elements = np.insert(zero_elements, np.repeat(np.arange(zero_elements.size), 2) + 1, repeated_arr)
+            zero_elements = np.insert(zero_elements, np.repeat(
+                np.arange(zero_elements.size), 2) + 1, repeated_arr)
 
             # Reemplazar los elementos iguales a 0 por self.days_reproduction
             zero_elements[zero_elements == 0] = self.days_reproduction
@@ -101,11 +140,33 @@ class Bacteria():
         # Convertir el arreglo de numpy de vuelta a lista
         self.array_init = array_init
 
-        #print(self.array_init)
-
+        # print(array_init)
+        # print(self.array_init)
+        print("SizeEnd:   ", len(array_init))
         yield len(array_init)
 
     def control_interactor(self):
-        for i in range(83):
-            print("Serie", i, "---------------------------------------------")
-            print(next(self.search_and_change_generator()))
+        for i in range(10):
+            print("==========================================================")
+            print("Serie", i,)
+            self.split_and_evaluate(i)
+            # print(len(self.array_init))
+            # print(next(self.search_and_change_generator()))
+
+        while True:
+            try:
+                raw_list = Lote.objects.filter(status=False).first()
+                iterador = int(raw_list.nivel_iter)
+                rango = 10 - iterador
+                self.array_init = raw_list.array
+                print(self.array_init)
+                for i in range(int(rango)):
+                    print("==========================================================")
+                    print("Serie", i,)
+                    self.split_and_evaluate(i)
+
+                raw_list.size_end = len(self.array_init)
+                raw_list.status = True
+                raw_list.save()
+            except:
+                break

@@ -27,9 +27,9 @@ class CalculateNumberEndBaterias(APIView):
             def run_control_interactor():
                 bacterias.control_interactor()
 
+
             # Ejecutar el método control_interactor() y medir el tiempo
             execution_time = timeit.timeit(run_control_interactor, number=1)
-
             # Imprimir el tiempo de ejecución
             print("Tiempo de ejecución:", execution_time)
 
