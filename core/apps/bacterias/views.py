@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 
 #
-from .models import ConfigVariable
+from .models import ConfigVariable, Lote
 from apps.bacterias.entity.bateria import Bacteria
 
 # Serializers
@@ -11,32 +11,30 @@ from .serializers import ConfigVariableSerializer
 
 import timeit
 import matplotlib.pyplot as plt
+from django.db.models import Sum
 
 
 class CalculateNumberEndBaterias(APIView):
 
     def post(self, request):
         try:
-            bacterias = Bacteria('default', [2, 3, 3, 1, 2])
-
-            # def run_control_interactor():
-            #    for i in range(15):
-            #        print("Serie", i, "---------------------------------------------")
-            #        bacterias.search_and_change()
+            bacterias = Bacteria('default', [0,0])
 
             def run_control_interactor():
                 bacterias.control_interactor()
-
 
             # Ejecutar el método control_interactor() y medir el tiempo
             execution_time = timeit.timeit(run_control_interactor, number=1)
             # Imprimir el tiempo de ejecución
             print("Tiempo de ejecución:", execution_time)
 
+            total_size_end = Lote.objects.aggregate(
+                total=Sum('size_end'))['total']
+
         except Exception as e:
             # Capturar cualquier excepción y devolver un mensaje de error en la respuesta
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response({}, status=status.HTTP_200_OK)
+        return Response({'Resultado': total_size_end}, status=status.HTTP_200_OK)
 
 
 class ConfigVariableView(APIView):
