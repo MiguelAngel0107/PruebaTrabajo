@@ -31,9 +31,6 @@ SECONDARY_APPS = [
 TERTIARY_APPS = [
     'corsheaders',
     'rest_framework',
-    #'django_redis',
-    #'rest_framework_simplejwt',
-    #'rest_framework_simplejwt.token_blacklist',
 ]
 
 INSTALLED_APPS = APPS_DEFAULT + PRIMARY_APPS + SECONDARY_APPS + TERTIARY_APPS
@@ -50,20 +47,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 12
 }
-
-#CACHES = {
-#    'default': {
-#        'BACKEND': 'django_redis.cache.RedisCache',
-#        'LOCATION': 'redis://127.0.0.1:6379/1',  # Cambia la URL y el número de base de datos según tu configuración de Redis
-#        'OPTIONS': {
-#            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#        }
-#   }
-#}
-
-# Configuración adicional para utilizar Redis como la caché predeterminada
-#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-#SESSION_CACHE_ALIAS = 'default'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

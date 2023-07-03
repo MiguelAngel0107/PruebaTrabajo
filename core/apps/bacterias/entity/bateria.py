@@ -3,7 +3,6 @@ import numpy as np
 
 
 class Bacteria():
-
     def __init__(self, name_config, array_init) -> None:
         if not isinstance(array_init, list):
             raise Exception("set_init debe ser un arreglo")
@@ -31,16 +30,14 @@ class Bacteria():
         # Obtener el tamaño actual del arreglo
         array_size = len(array_init)
 
-        if array_size <= 4:
+        if array_size <= 800000000:
             next(self.search_and_change_generator())
             return False
         else:
-            sub_arrays = np.array_split(array_init, array_size // 2)
+            sub_arrays = np.array_split(array_init, array_size // 800000)
             print(sub_arrays)
             self.storage_lotes(sub_arrays, iter)
             return True
-            # self.array_init = sub_arrays[0]
-            # next(self.search_and_change_generator())
 
     def storage_lotes(self, sub_arrays, iter):
         for index, sub_array in enumerate(sub_arrays):
@@ -54,10 +51,6 @@ class Bacteria():
                 status=False,
                 size=len(sub_array)
             )
-        #raw_list = Lote.objects.filter(
-        #    nivel_iter=iter, id_collection=0).first()
-        #raw_list.status = True
-        #raw_list.save()
 
     def search_and_change(self):
         # Convertir la lista a un arreglo de numpy
@@ -165,17 +158,20 @@ class Bacteria():
         while True:
             try:
                 raw_list = Lote.objects.filter(status=False).first()
+
                 iterador = int(raw_list.nivel_iter)
-                id_collection = raw_list.id_collection
-                rango = 7 - iterador
+                id_collection = int(raw_list.id_collection)
+                rango = 4 - iterador
                 self.array_init = raw_list.array
                 # print(self.array_init, "lllllllllllllllllllllll")
                 for i in range(int(rango)):
                     print("==========================================================")
-                    print("Serie:", i, "|   Nivel:",
+                    print("ID:", i+iterador+id_collection, "|    Serie:", i, "|   Nivel:",
                           iterador, "|   Id:", id_collection)
-                    control = self.split_and_evaluate(i)
+                    print("==========================================================")
+                    control = self.split_and_evaluate(i+1)
                     if control:
+                        # raw_list.nivel_iter_end = rango + i + 1
                         break
 
                 raw_list.size_end = len(self.array_init)

@@ -13,6 +13,7 @@ class Lote(models.Model):
     id_lote = models.CharField()
     id_collection = models.CharField(max_length=999)
     nivel_iter = models.CharField(max_length=4)
+    nivel_iter_end = models.CharField(max_length=4, default='0')
     array = models.JSONField()
     status = models.BooleanField(default=False)
     size = models.PositiveBigIntegerField(default=0)

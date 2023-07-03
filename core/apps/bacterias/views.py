@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 
-#
+
 from .models import ConfigVariable, Lote
 from apps.bacterias.entity.bateria import Bacteria
 
@@ -10,7 +10,6 @@ from apps.bacterias.entity.bateria import Bacteria
 from .serializers import ConfigVariableSerializer
 
 import timeit
-import matplotlib.pyplot as plt
 from django.db.models import Sum
 
 
@@ -18,7 +17,14 @@ class CalculateNumberEndBaterias(APIView):
 
     def post(self, request):
         try:
-            bacterias = Bacteria('default', [0,0])
+            config = request.data['config']
+            array = request.data['array']
+        except Exception as e:
+            # Capturar cualquier excepción y devolver un mensaje de error en la respuesta
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            bacterias = Bacteria(str(config), array)
 
             def run_control_interactor():
                 bacterias.control_interactor()
