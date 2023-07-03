@@ -31,6 +31,7 @@ SECONDARY_APPS = [
 TERTIARY_APPS = [
     'corsheaders',
     'rest_framework',
+    'drf_yasg',
 ]
 
 INSTALLED_APPS = APPS_DEFAULT + PRIMARY_APPS + SECONDARY_APPS + TERTIARY_APPS
